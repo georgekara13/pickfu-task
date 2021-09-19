@@ -1,5 +1,6 @@
 const express = require("express");
 const mongoose = require("mongoose");
+const cors = require("cors");
 
 const { DB } = require("./configuration/DB");
 const { Logger } = require("./configuration/Logger");
@@ -17,6 +18,7 @@ const port = process.env.PORT || 3001;
 const app = express();
 
 app.use(express.json());
+app.use(cors());
 
 app.listen(port, () => {
   Logger.info(`API is up in port ${port}, running in ${DB.MODE} mode`);
