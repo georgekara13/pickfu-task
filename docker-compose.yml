@@ -1,0 +1,31 @@
+version: "3"
+services:
+  client:
+    build: client
+    depends_on:
+      - api
+    volumes:
+      - ./client/public:/client/public:cached,ro
+      - ./client/src:/client/src:cached,ro
+    ports:
+      - "3000:3000"
+  api:
+    build: server
+    depends_on:
+      - database
+    volumes:
+      - ./server/:/usr/src/app
+    ports:
+      - "3001:3001"
+    environment:
+      DATABASE_USER: ${MONGO_INITDB_ROOT_USERNAME}
+      DATABASE_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+      PORT: 3001
+  database:
+    image: mongo:4.4
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+      MONGO_INITDB_DATABASE: database
