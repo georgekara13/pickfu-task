@@ -13,7 +13,7 @@ const AnswersList = () => {
   }, []);
 
   return (
-    <div className="w-full flex flex-col">
+    <div className="w-full flex flex-col mb-8">
       <h2 className="text-3xl bold mb-4">Answers</h2>
       <h2 className="text-xl bold mb-4">Is a hot dog a sandwich? Why?</h2>
       <ul>

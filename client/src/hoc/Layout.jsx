@@ -6,11 +6,13 @@ import Footer from "../components/Footer.jsx";
 class Layout extends Component {
   render() {
     return (
-      <div>
+      <React.Fragment>
         <Header />
-        <div className="pt-28 px-6 mb-24">{this.props.children}</div>
-        <Footer />
-      </div>
+        <div className="relative min-h-screen">
+          <div className="pt-28 px-6 pb-48">{this.props.children}</div>
+          <Footer />
+        </div>
+      </React.Fragment>
     );
   }
 }
