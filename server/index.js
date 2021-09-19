@@ -1,6 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const socketIO = require("socket.io");
 
 const { DB } = require("./configuration/DB");
 const { Logger } = require("./configuration/Logger");
@@ -20,38 +21,48 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-app.listen(port, () => {
-  Logger.info(`API is up in port ${port}, running in ${DB.MODE} mode`);
+const server = require("http").createServer(app);
+
+const io = socketIO(server, {
+  cors: {
+    origin: "http://localhost:3000",
+    methods: ["GET", "POST"],
+  },
 });
 
-app.get("/api/getanswers", (req, res) => {
-  Answer.find()
-    .sort({ createdAt: -1 })
-    .limit(100)
-    .exec((err, doc) => {
+io.on("connection", (socket) => {
+  Logger.info(`New connection ${socket.id}`);
+
+  socket.on("initial_data", () => {
+    Answer.find()
+      .sort({ createdAt: -1 })
+      .limit(100)
+      .exec((err, doc) => {
+        if (err) {
+          Logger.warn(err);
+        }
+
+        io.sockets.emit("get_data", doc);
+      });
+  });
+
+  socket.on("add_answer", (doc) => {
+    const answer = new Answer(doc);
+    Logger.info(JSON.stringify(doc));
+    answer.save((err, doc) => {
       if (err) {
         Logger.warn(err);
-        return res.status(400).send(err);
       }
-      res.status(200).json({
-        doc,
-      });
-    });
-});
 
-app.post("/api/addanswer", (req, res) => {
-  const answer = new Answer(req.body);
-
-  Logger.info(`Received payload: ${JSON.stringify(req.body)}`);
-
-  answer.save((err, doc) => {
-    if (err) {
-      Logger.warn(err);
-      return res.status(400).send(err);
-    }
-    res.status(200).json({
-      post: true,
-      answerId: doc._id,
+      io.sockets.emit("change_data");
     });
   });
+
+  socket.on("disconnect", () => {
+    Logger.info(`Client ${socket.id} disconnected`);
+  });
+});
+
+server.listen(port, () => {
+  Logger.info(`API is up in port ${port}, running in ${DB.MODE} mode`);
 });

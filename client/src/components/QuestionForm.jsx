@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import axios from "axios";
+import socket from "../utils/socket";
 
 const QuestionForm = () => {
   const [answer, setAnswer] = useState("");
@@ -8,15 +8,9 @@ const QuestionForm = () => {
 
   const submitAnswer = () => {
     if (!error && answer) {
-      axios
-        .post("http://localhost:3001/api/addanswer", { value: answer })
-        .then((res) => {
-          if (res.data.post === true) {
-            setSubmitted(true);
-            setAnswer("");
-          }
-        })
-        .catch((err) => setError("Something's wrong, please try again later"));
+      socket.emit("add_answer", { value: answer });
+      setSubmitted(true);
+      setAnswer("");
     } else if (answer === "") {
       setSubmitted(false);
       setError("Please enter some text");

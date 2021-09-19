@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import socket from "../utils/socket";
 
 const formatDate = (date) => {
   return date.replace(/:\d+\.\d+Z$/, "").replace(/T/, " ");
@@ -9,7 +9,19 @@ const AnswersList = () => {
   const [answers, setAnswers] = useState([]);
 
   useEffect(() => {
-    axios.get("http://localhost:3001/api/getanswers").then((res) => setAnswers(res.data.doc));
+    socket.emit("initial_data");
+    socket.on("get_data", (answers) => {
+      setAnswers(answers);
+    });
+
+    socket.on("change_data", () => {
+      socket.emit("initial_data");
+    });
+
+    return () => {
+      socket.off("get_data");
+      socket.off("change_data");
+    };
   }, []);
 
   return (
@@ -20,12 +32,12 @@ const AnswersList = () => {
         {answers.map((answer, i) => (
           <li
             key={answer._id}
-            className="border border-gray-200 rounded-lg p-4 mb-1 flex lg:flex-row flex-col w-full lg:w-4/6 hover:border-gray-500 cursor-pointer"
+            className="hover:shadow-md shadow border border-gray-200 rounded-lg p-4 mb-2 flex lg:flex-row flex-col w-full lg:w-4/6 hover:border-gray-300 cursor-pointer"
           >
-            <p>
+            <p className="flex-shrink w-full md:w-3/4">
               <b>{i + 1}</b>. {answer.value}
             </p>
-            <p className="ml-0 lg:ml-auto">Added: {formatDate(answer.createdAt)}</p>
+            <p className="ml-0 lg:ml-auto flex-0 my-auto italic">Added: {formatDate(answer.createdAt)}</p>
           </li>
         ))}
       </ul>
