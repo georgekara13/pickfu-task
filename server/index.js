@@ -24,7 +24,7 @@ app.listen(port, () => {
 
 app.get("/api/getanswers", (req, res) => {
   Answer.find()
-    .sort({ x: -1 })
+    .sort({ createdAt: -1 })
     .limit(100)
     .exec((err, doc) => {
       if (err) {
