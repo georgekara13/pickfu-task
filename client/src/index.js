@@ -7,10 +7,8 @@ import Routes from "./Routes.jsx";
 import "./index.css";
 
 ReactDOM.render(
-  <React.StrictMode>
-    <BrowserRouter>
-      <Routes />
-    </BrowserRouter>
-  </React.StrictMode>,
+  <BrowserRouter>
+    <Routes />
+  </BrowserRouter>,
   document.getElementById("root")
 );
