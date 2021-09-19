@@ -7,7 +7,7 @@ const QuestionForm = () => {
   const [submitted, setSubmitted] = useState(false);
 
   const submitAnswer = () => {
-    if (!error) {
+    if (!error && answer) {
       axios
         .post("http://localhost:3001/api/addanswer", { value: answer })
         .then((res) => {
@@ -17,6 +17,9 @@ const QuestionForm = () => {
           }
         })
         .catch((err) => setError("Something's wrong, please try again later"));
+    } else if (answer === "") {
+      setSubmitted(false);
+      setError("Please enter some text");
     }
   };
 
