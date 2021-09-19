@@ -7,6 +7,8 @@ services:
     volumes:
       - ./client/public:/client/public:cached,ro
       - ./client/src:/client/src:cached,ro
+      - ./client/craco.config.js:/client/craco.config.js
+      - ./client/tailwind.config.js:/client/tailwind.config.js
     ports:
       - "3000:3000"
   api:
