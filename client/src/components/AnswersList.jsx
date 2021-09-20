@@ -2,22 +2,35 @@ import React, { useState, useEffect } from "react";
 import socket from "../utils/socket";
 
 const formatDate = (date) => {
-  return date.replace(/:\d+\.\d+Z$/, "").replace(/T/, " ");
+  return new Date(date).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "numeric",
+    day: "numeric",
+    hour: "numeric",
+    minute: "numeric",
+    second: "numeric",
+  });
 };
 
 const AnswersList = () => {
   const [answers, setAnswers] = useState([]);
 
+  // a side-effect to setup socket conenction with the server
   useEffect(() => {
+    // the client emits an initial_data message, the server will answer with a get_data message
     socket.emit("initial_data");
+
+    // the server emmited a get_data event along with a payload, we need to consume it and render it
     socket.on("get_data", (answers) => {
       setAnswers(answers);
     });
 
+    // the server emmited a change_data event, the client will emmit an initial_data message and then will wait for the get_data message
     socket.on("change_data", () => {
       socket.emit("initial_data");
     });
 
+    // on component unmount, clean up the sockets
     return () => {
       socket.off("get_data");
       socket.off("change_data");

@@ -9,6 +9,7 @@ const QuestionForm = () => {
 
   const submitAnswer = () => {
     if (!error && answer) {
+      // no errors, we are good to emit an add_answer message to the server, along with the data to be stored
       socket.emit("add_answer", { value: answer });
       setSubmitted(true);
       setAnswer("");
@@ -27,6 +28,7 @@ const QuestionForm = () => {
         }`}
         rows={5}
         onChange={(e) => {
+          // This is where the input validation takes place
           setSubmitted(false);
           const value = e.target.value;
           if (isEmptyString(value)) {
