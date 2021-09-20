@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import socket from "../utils/socket";
+import { isDisallowedAnswer, isEmptyString } from "../utils/formValidation";
 
 const QuestionForm = () => {
   const [answer, setAnswer] = useState("");
@@ -28,10 +29,9 @@ const QuestionForm = () => {
         onChange={(e) => {
           setSubmitted(false);
           const value = e.target.value;
-          const regex = /^\s*(yes|I\s*don'?t\s*know|no)\s*$/i;
-          if (!value || value.match(/^\s*$/)) {
+          if (isEmptyString(value)) {
             setError("Please enter some text");
-          } else if (value.match(regex)) {
+          } else if (isDisallowedAnswer(value)) {
             setError("Answer cannot be one of: yes/no/I don't know");
           } else {
             setError("");
